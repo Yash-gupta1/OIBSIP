@@ -2,8 +2,8 @@
 
 This is the 7th project for freeCodeCamp's Front-End Development certificate.
 
-Completed On: 28 January 2016  
-Last Updated: 30 March 2017
+Completed On: 28 august 2022
+Last Updated: 28 janusry 2023
 
 ## Objectives
 
