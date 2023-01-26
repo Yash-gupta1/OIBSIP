@@ -1,6 +1,6 @@
 # JavaScript Calculator
 
-This is the 7th project for freeCodeCamp's Front-End Development certificate.
+
 
 Completed On: 28 august 2022
 Last Updated: 28 janusry 2023
