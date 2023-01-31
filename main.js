@@ -1,120 +1,87 @@
-"use strict";
+const container = document.querySelector('.container');
+var inputValue = document.querySelector('.input');
+const add = document.querySelector('.add');
 
-const input = document.querySelector(".input");
-const result = document.querySelector(".result");
-const deleteBtn = document.querySelector(".delete");
-const keys = document.querySelectorAll(".bottom span");
-
-let operation = "";
-let answer;
-let decimalAdded = false;
-
-const operators = ["+", "-", "x", "÷"];
-
-function handleKeyPress (e) {
-  const key = e.target.dataset.key;
-  const lastChar = operation[operation.length - 1];
-
-  if (key === "=") {
-    return;
-  }
-
-  if (key === "." && decimalAdded) {
-    return;
-  }
-
-  if (operators.indexOf(key) !== -1) {
-    decimalAdded = false;
-  }
-
-  if (operation.length === 0 && key === "-") {
-    operation += key;
-    input.innerHTML = operation;
-    return;
-  }
-
-  if (operation.length === 0 && operators.indexOf(key) !== -1) {
-    input.innerHTML = operation;
-    return;
-  }
-
-  if (operators.indexOf(lastChar) !== -1 && operators.indexOf(key) !== -1) {
-    operation = operation.replace(/.$/, key);
-    input.innerHTML = operation;
-    return;
-  }
-
-  if (key) {
-    if (key === ".") decimalAdded = true;
-    operation += key;
-    input.innerHTML = operation;
-    return;
-  }
-
+if(window.localStorage.getItem("todos") == undefined){
+     var todos = [];
+     window.localStorage.setItem("todos", JSON.stringify(todos));
 }
 
-function evaluate(e) {
-  const key = e.target.dataset.key;
-  const lastChar = operation[operation.length - 1];
+var todosEX = window.localStorage.getItem("todos");
+var todos = JSON.parse(todosEX);
 
-  if (key === "=" && operators.indexOf(lastChar) !== -1) {
-    operation = operation.slice(0, -1);
-  }
 
-  if (operation.length === 0) {
-    answer = "";
-    result.innerHTML = answer;
-    return;
-  }
+class item{
+	constructor(name){
+		this.createItem(name);
+	}
+    createItem(name){
+    	var itemBox = document.createElement('div');
+        itemBox.classList.add('item');
 
-  try {
+    	var input = document.createElement('input');
+    	input.type = "text";
+    	input.disabled = true;
+    	input.value = name;
+    	input.classList.add('item_input');
 
-    if (operation[0] === "0" && operation[1] !== "." && operation.length > 1) {
-      operation = operation.slice(1);
+    	var edit = document.createElement('button');
+    	edit.classList.add('edit');
+    	edit.innerHTML = "EDIT";
+    	edit.addEventListener('click', () => this.edit(input, name));
+
+    	var remove = document.createElement('button');
+    	remove.classList.add('remove');
+    	remove.innerHTML = "REMOVE";
+    	remove.addEventListener('click', () => this.remove(itemBox, name));
+
+    	container.appendChild(itemBox);
+
+        itemBox.appendChild(input);
+    
+        itemBox.appendChild(remove);
+
     }
 
-    const final = operation.replace(/x/g, "*").replace(/÷/g, "/");
-    answer = +(eval(final)).toFixed(5);
-
-    if (key === "=") {
-      decimalAdded = false;
-      operation = `${answer}`;
-      answer = "";
-      input.innerHTML = operation;
-      result.innerHTML = answer;
-      return;
+    edit(input, name){
+        if(input.disabled == true){
+           input.disabled = !input.disabled;
+        }
+    	else{
+            input.disabled = !input.disabled;
+            let indexof = todos.indexOf(name);
+            todos[indexof] = input.value;
+            window.localStorage.setItem("todos", JSON.stringify(todos));
+        }
     }
 
-    result.innerHTML = answer;
-
-  } catch (e) {
-    if (key === "=") {
-      decimalAdded = false;
-      input.innerHTML = `<span class="error">${operation}</span>`;
-      result.innerHTML = `<span class="error">Bad Expression</span>`;
+    remove(itemBox, name){
+        itemBox.parentNode.removeChild(itemBox);
+        let index = todos.indexOf(name);
+        todos.splice(index, 1);
+        window.localStorage.setItem("todos", JSON.stringify(todos));
     }
-    console.log(e);
-  }
-
 }
 
-function clearInput (e) {
+add.addEventListener('click', check);
+window.addEventListener('keydown', (e) => {
+	if(e.which == 13){
+		check();
+	}
+})
 
-  if (e.ctrlKey) {
-    operation = "";
-    answer = "";
-    input.innerHTML = operation;
-    result.innerHTML = answer;
-    return;
-  }
-
-  operation = operation.slice(0, -1);
-  input.innerHTML = operation;
-
+function check(){
+	if(inputValue.value != ""){
+		new item(inputValue.value);
+        todos.push(inputValue.value);
+        window.localStorage.setItem("todos", JSON.stringify(todos));
+		inputValue.value = "";
+	}
 }
 
-deleteBtn.addEventListener("click", clearInput);
-keys.forEach(key => {
-  key.addEventListener("click", handleKeyPress);
-  key.addEventListener("click", evaluate);
-});
+
+for (var v = 0 ; v < todos.length ; v++){
+    new item(todos[v]);
+}
+
+
